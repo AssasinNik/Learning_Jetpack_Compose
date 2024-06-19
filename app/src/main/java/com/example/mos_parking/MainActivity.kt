@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialogDefaults.shape
@@ -65,8 +68,7 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,56 +79,47 @@ class MainActivity : ComponentActivity() {
             Font(R.font.moscow, FontWeight.Normal)
         )
         setContent{
-            val snackbarHostState = remember { SnackbarHostState() }
-            var textFieldState by remember {
-                mutableStateOf("")
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF09090F))){
             }
-            val scope = rememberCoroutineScope()
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                snackbarHost = {
-                    SnackbarHost(hostState = snackbarHostState)
-                }
-            ){
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 30.dp)
-                ) {
-                    OutlinedTextField(value = textFieldState,
-                        label = {Text(text = "Имя")},
-                        onValueChange = { textFieldState= it.toString() },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Green, // Цвет границы при фокусе
-                            unfocusedBorderColor = Color.Red, // Цвет границы в неактивном состоянии
-                            disabledBorderColor = Color.Red, // Цвет границы в отключенном состоянии
-                            cursorColor = Color.Black, // Цвет курсора
-                            focusedTextColor = Color.Black, // Цвет текста при фокусе
-                            unfocusedTextColor = Color.Black, // Цвет текста в неактивном состоянии
-                            disabledTextColor = Color.LightGray, // Цвет текста в отключенном состоянии
-                            focusedLabelColor = Color.Blue, // Цвет метки при фокусе
-                            unfocusedLabelColor = Color.Gray // Цвет метки в неактивном состоянии
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp), ){
+                Text(text = buildAnnotatedString {
+                    append("Moscow ")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color(0xFF68AD46),
+                            fontSize = 30.sp
                         )
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = {
-                        scope.launch {
-                            if(textFieldState!=""){
-                                snackbarHostState.showSnackbar("Привет $textFieldState")
-                            }
-                            else{
-                                snackbarHostState.showSnackbar("Укажите Имя")
-                            }
-                        }
-                    }) {
-                        Text("Greet")
+                    ){
+                        append("parking")
                     }
-                }
 
+                },
+                    style = TextStyle(
+                        color = Color.White,
+                        fontSize = 30.sp,
+                        fontFamily = fontFamilyArial,
+                        textAlign = TextAlign.Center
+                    )
+                )
+            }
+            val description = "Феррари одна из самых быстрых машин, которая колесила по Астрахани"
+            val title = "Красная фуррия в Астрахани"
+            LazyRow(modifier = Modifier.padding(top = 100.dp)){
+                items(50){
+                    val random = Random.nextInt(2)
+                    val painter = if (random == 0) {
+                        painterResource(id = R.drawable.car1)
+                    } else {
+                        painterResource(id = R.drawable.car2)
+                    }
+                    Box(modifier = Modifier
+                        .padding(16.dp)){
+                        CarCard(painter = painter, contentDescription = description, title = title + " " + it.toString(), fontFamily = fontFamilyMoscow)
+                    }}
             }
         }
     }
@@ -146,7 +139,7 @@ fun CarCard(
             defaultElevation = 5.dp
         )
     ){
-        Box(modifier = Modifier.height(200.dp)){
+        Box(modifier = Modifier.height(200.dp).width(300.dp)){
             Image(painter = painter,
                 contentDescription = contentDescription,
                 contentScale = ContentScale.Crop
