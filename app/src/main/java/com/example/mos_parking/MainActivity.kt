@@ -1,5 +1,6 @@
 package com.example.mos_parking
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,12 +24,24 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialogDefaults.shape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -48,8 +61,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mos_parking.ui.theme.Mos_parkingTheme
+import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,60 +77,57 @@ class MainActivity : ComponentActivity() {
             Font(R.font.moscow, FontWeight.Normal)
         )
         setContent{
-
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFF09090F))){
+            val snackbarHostState = remember { SnackbarHostState() }
+            var textFieldState by remember {
+                mutableStateOf("")
             }
-
-
-            val painter = painterResource(id = R.drawable.car1)
-            val description = "Феррари одна из самых быстрых машин, которая колесила по Астрахани"
-            val title = "Красная фуррия в Астрахани"
-
-            val painter1 = painterResource(id = R.drawable.car2)
-            val description1 = "Порше это будущее для развивающихся городов!"
-            val title1 = "Порше снова всех удивил"
-            Column (){
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp), ){
-                    Text(text = buildAnnotatedString {
-                        append("Moscow ")
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color(0xFF68AD46),
-                                fontSize = 30.sp
-                            )
-                        ){
-                            append("parking")
-                        }
-
-                    },
-                        style = TextStyle(
-                            color = Color.White,
-                            fontSize = 30.sp,
-                            fontFamily = fontFamilyArial,
-                            textAlign = TextAlign.Center
+            val scope = rememberCoroutineScope()
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                snackbarHost = {
+                    SnackbarHost(hostState = snackbarHostState)
+                }
+            ){
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 30.dp)
+                ) {
+                    OutlinedTextField(value = textFieldState,
+                        label = {Text(text = "Имя")},
+                        onValueChange = { textFieldState= it.toString() },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.Green, // Цвет границы при фокусе
+                            unfocusedBorderColor = Color.Red, // Цвет границы в неактивном состоянии
+                            disabledBorderColor = Color.Red, // Цвет границы в отключенном состоянии
+                            cursorColor = Color.Black, // Цвет курсора
+                            focusedTextColor = Color.Black, // Цвет текста при фокусе
+                            unfocusedTextColor = Color.Black, // Цвет текста в неактивном состоянии
+                            disabledTextColor = Color.LightGray, // Цвет текста в отключенном состоянии
+                            focusedLabelColor = Color.Blue, // Цвет метки при фокусе
+                            unfocusedLabelColor = Color.Gray // Цвет метки в неактивном состоянии
                         )
                     )
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround ) {
-                    Box(modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .padding(16.dp)){
-                        CarCard(painter = painter, contentDescription = description, title = title, fontFamily = fontFamilyMoscow)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = {
+                        scope.launch {
+                            if(textFieldState!=""){
+                                snackbarHostState.showSnackbar("Привет $textFieldState")
+                            }
+                            else{
+                                snackbarHostState.showSnackbar("Укажите Имя")
+                            }
+                        }
+                    }) {
+                        Text("Greet")
                     }
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)){
-                        CarCard(painter = painter1, contentDescription = description1, title = title1, fontFamily = fontFamilyMoscow)
-                    }
                 }
-            }
 
+            }
         }
     }
 }
@@ -164,6 +178,18 @@ fun CarCard(
         }
 
     }
+}
+@Composable
+fun BoxColor(modifier: Modifier = Modifier, updateColor: (Color)->Unit){
+
+    Box( modifier = modifier
+        .background(Color.Blue)
+        .clickable {
+            updateColor(
+                Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f)
+            )
+        }
+    )
 }
 
 
