@@ -61,8 +61,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mos_parking.ui.HomeScreen
 import com.example.mos_parking.ui.theme.Mos_parkingTheme
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -79,48 +81,7 @@ class MainActivity : ComponentActivity() {
             Font(R.font.moscow, FontWeight.Normal)
         )
         setContent{
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFF09090F))){
-            }
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp), ){
-                Text(text = buildAnnotatedString {
-                    append("Moscow ")
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color(0xFF68AD46),
-                            fontSize = 30.sp
-                        )
-                    ){
-                        append("parking")
-                    }
-
-                },
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = 30.sp,
-                        fontFamily = fontFamilyArial,
-                        textAlign = TextAlign.Center
-                    )
-                )
-            }
-            val description = "Феррари одна из самых быстрых машин, которая колесила по Астрахани"
-            val title = "Красная фуррия в Астрахани"
-            LazyRow(modifier = Modifier.padding(top = 100.dp)){
-                items(50){
-                    val random = Random.nextInt(2)
-                    val painter = if (random == 0) {
-                        painterResource(id = R.drawable.car1)
-                    } else {
-                        painterResource(id = R.drawable.car2)
-                    }
-                    Box(modifier = Modifier
-                        .padding(16.dp)){
-                        CarCard(painter = painter, contentDescription = description, title = title + " " + it.toString(), fontFamily = fontFamilyMoscow)
-                    }}
-            }
+            HomeScreen()
         }
     }
 }
@@ -139,7 +100,9 @@ fun CarCard(
             defaultElevation = 5.dp
         )
     ){
-        Box(modifier = Modifier.height(200.dp).width(300.dp)){
+        Box(modifier = Modifier
+            .height(200.dp)
+            .width(300.dp)){
             Image(painter = painter,
                 contentDescription = contentDescription,
                 contentScale = ContentScale.Crop
