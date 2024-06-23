@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mos_parking.ui.HomeScreen
+import com.example.mos_parking.ui.ListScreen
 import com.example.mos_parking.ui.theme.Mos_parkingTheme
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -73,79 +74,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val fontFamilyArial = FontFamily(
-            Font(R.font.arial, FontWeight.Bold)
-        )
-        val fontFamilyMoscow = FontFamily(
-            Font(R.font.moscow, FontWeight.Normal)
-        )
         setContent{
-            HomeScreen()
+            Navigation()
         }
     }
-}
-
-@Composable
-fun CarCard(
-    painter: Painter,
-    contentDescription: String,
-    title: String,
-    fontFamily: FontFamily,
-    modifier : Modifier =Modifier
-){
-    Card(modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(15.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 5.dp
-        )
-    ){
-        Box(modifier = Modifier
-            .height(200.dp)
-            .width(300.dp)){
-            Image(painter = painter,
-                contentDescription = contentDescription,
-                contentScale = ContentScale.Crop
-            )
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color(0xFF68AD46)
-                        ),
-                        startY = 300f
-                    )
-                ))
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(12.dp),
-                contentAlignment = Alignment.BottomStart
-            ){
-                Text(title, style = TextStyle(
-                    color = Color.White,
-                    fontSize = 15.sp,
-                    fontFamily = fontFamily
-                )
-                )
-            }
-        }
-
-    }
-}
-@Composable
-fun BoxColor(modifier: Modifier = Modifier, updateColor: (Color)->Unit){
-
-    Box( modifier = modifier
-        .background(Color.Blue)
-        .clickable {
-            updateColor(
-                Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f)
-            )
-        }
-    )
 }
 
 

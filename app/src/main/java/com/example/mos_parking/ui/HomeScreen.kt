@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,9 +42,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.example.mos_parking.Films
 import com.example.mos_parking.R
+import com.example.mos_parking.Screen
 import com.example.mos_parking.ui.theme.Background
 import com.example.mos_parking.ui.theme.FirstGradient
 import com.example.mos_parking.ui.theme.SecondGradient
@@ -56,8 +62,7 @@ val fontFamilyMoscow = FontFamily(
 )
 
 @Composable
-fun HomeScreen() {
-
+fun HomeScreen(navController: NavController) {
     Box(modifier = Modifier
         .background(Background)
         .fillMaxSize()
@@ -102,11 +107,20 @@ fun HomeScreen() {
 
 
         }
+        var selectedItemIndex by remember { mutableStateOf(0) }
         BottomNavBar(items = listOf(
             BottomNavContent("Home", R.drawable.ic_home),
             BottomNavContent("Find", R.drawable.ic_search),
             BottomNavContent("Profile", R.drawable.ic_profile)
-        ), modifier = Modifier.align(Alignment.BottomCenter))
+        ), modifier = Modifier.align(Alignment.BottomCenter),initialItemIndexSelected = selectedItemIndex){
+            index -> selectedItemIndex = index
+            when (index) {
+                0 -> navController.navigate(Screen.HomeScreen.route)
+                1 -> navController.navigate(Screen.ListScreen.route)
+                2 -> navController.navigate(Screen.HomeScreen.route)
+            }
+
+        }
     }
 
 }
@@ -115,7 +129,8 @@ fun HomeScreen() {
 fun BottomNavBar(
     items: List<BottomNavContent>,
     modifier: Modifier = Modifier,
-    initialItemIndexSelected: Int = 0
+    initialItemIndexSelected: Int = 0,
+    onItemClick: (Int) -> Unit
 ){
     var selectedItemIndex by remember{
         mutableStateOf(initialItemIndexSelected)
@@ -134,6 +149,7 @@ fun BottomNavBar(
                 isSelected = index == selectedItemIndex
             )
             {
+                onItemClick(index)
                 selectedItemIndex = index
             }
         }
